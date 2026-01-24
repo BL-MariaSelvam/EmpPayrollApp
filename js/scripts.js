@@ -165,3 +165,78 @@ resetButton.addEventListener('click', () => {
     alert("Employee saved successfully!");
   });
 });
+const empListEl = document.getElementById("empList");
+
+let employees = [];
+
+// Load from localStorage (if exists)
+document.addEventListener("DOMContentLoaded", () => {
+  const stored = localStorage.getItem("employees");
+  if (stored) employees = JSON.parse(stored);
+  renderEmployees();
+});
+
+// Save to localStorage
+function saveToStorage() {
+  localStorage.setItem("employees", JSON.stringify(employees));
+}
+
+// Render employee rows
+function renderEmployees() {
+  empListEl.innerHTML = "";
+
+  employees.forEach((emp, index) => {
+    const row = document.createElement("div");
+    row.className = "employee-row";
+
+    row.innerHTML = `
+      <span class="col name">${emp.name}</span>
+      <span class="col gender">${emp.gender}</span>
+      <span class="col dept">${emp.department.map(d => `<span class="dept-badge">${d}</span>`).join('')}</span>
+      <span class="col date">${emp.startDate}</span>
+      <span class="col salary">${emp.salary}</span>
+      <span class="col actions">
+        <button class="edit-btn" onclick="editEmployee(${index})">Edit</button>
+        <button class="delete-btn" onclick="deleteEmployee(${index})">Delete</button>
+      </span>
+    `;
+
+    empListEl.appendChild(row);
+  });
+}
+
+// Delete employee
+function deleteEmployee(idx) {
+  if (confirm("Remove this employee?")) {
+    employees.splice(idx, 1);
+    saveToStorage();
+    renderEmployees();
+  }
+}
+
+// Edit employee
+function editEmployee(idx) {
+  const emp = employees[idx];
+  const newName = prompt("Name:", emp.name);
+  const newSalary = prompt("Salary:", emp.salary);
+  if (newName && newSalary) {
+    emp.name = newName;
+    emp.salary = newSalary;
+    saveToStorage();
+    renderEmployees();
+  }
+}
+
+// For testing — Add demo entry
+document.getElementById("addBtn").addEventListener("click", () => {
+  const name = prompt("Name:");
+  const gender = prompt("Gender (Male/Female):");
+  const dept = prompt("Department (comma separated):").split(",");
+  const date = prompt("Start Date (1 Nov 2020):");
+  const salary = prompt("Salary:");
+
+  employees.push({ name, gender, department: dept, startDate: date, salary });
+  saveToStorage();
+  renderEmployees();
+});
+
