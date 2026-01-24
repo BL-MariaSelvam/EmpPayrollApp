@@ -1,5 +1,4 @@
 class EmployeePayroll {
-
   constructor() {
     this._name = "";
     this._profilePic = "";
@@ -46,7 +45,7 @@ class EmployeePayroll {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Salary live output
+  // Update salary label
   const salary = document.querySelector('#salary');
   const salaryOutput = document.querySelector('#salaryOutput');
   if (salary && salaryOutput) {
@@ -56,187 +55,126 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const resetButton = document.querySelector('button[type="reset"]');
+ // Pre-fill form when editing
+  const editIndex = localStorage.getItem("editIndex");
+  if (editIndex !== null) {
+    const employees = JSON.parse(localStorage.getItem("EmployeePayrollList")) || [];
+    const employee = employees[editIndex];
 
-resetButton.addEventListener('click', () => {
+    if (employee) {
+      document.querySelector("#name").value = employee.name;
+      document.querySelector('#salary').value = employee.salary;
+      document.querySelector('#salaryOutput').textContent = employee.salary;
 
-  // Clear name error
-  const nameError = document.querySelector('.text-error');
-  if (nameError) nameError.textContent = "";
+      // Gender
+      document.querySelectorAll('input[name="gender"]').forEach(radio => {
+        if (radio.value === employee.gender) radio.checked = true;
+      });
 
-  // Clear date error
-  const dateError = document.querySelector('.date-error');
-  if (dateError) dateError.textContent = "";
+      // Department
+      document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        if (employee.department.includes(box.value)) box.checked = true;
+      });
 
-  // Reset salary display back to default
-  const salary = document.querySelector('#salary');
-  const salaryOutput = document.querySelector('#salaryOutput');
-  if (salary && salaryOutput) {
-    salaryOutput.textContent = salary.value;
+      // Date
+      const parts = employee.startDate.split("-");
+      document.querySelector('#day').value = parts[0];
+      document.querySelector('#month').value = parts[1];
+      document.querySelector('#year').value = parts[2];
+
+      document.querySelector('textarea').value = employee.notes;
+    }
   }
 
+
+ document.querySelector("button[type='reset']").addEventListener("click", () => {
+  localStorage.removeItem("editIndex");
 });
 
-  // Form submit
+
   const form = document.querySelector('.payroll-form');
-  form.addEventListener('submit', function(event) {
-    event.preventDefault();
 
-    // Clear previous errors
-    document.querySelector('.text-error').textContent = "";
-    document.querySelector('.date-error').textContent = "";
+ form.addEventListener("submit", function (event) {
+  event.preventDefault();
 
-    // --- NAME VALIDATION ---
-    const nameInput = document.querySelector('#name').value.trim();
-    let isValid = true;
+  // VALIDATION (your existing code)
+  const nameInput = document.querySelector('#name').value.trim();
 
-    if (nameInput.length < 3) {
-      document.querySelector('.text-error').textContent = "Name must be at least 3 characters";
-      isValid = false;
-    }
-
-    // --- DATE VALIDATION ---
-    const day = document.querySelector('#day').value;
-    const month = document.querySelector('#month').value;
-    const year = document.querySelector('#year').value;
-
-    let dateErrorMsg = "";
-    if (!day || !month || !year) {
-      dateErrorMsg = "Date must be fully selected";
-      isValid = false;
-    } else {
-      const d = parseInt(day);
-      const m = new Date(`${month} 1, ${year}`).getMonth() + 1;
-      const y = parseInt(year);
-      const testDate = new Date(y, m - 1, d);
-
-      if (isNaN(testDate.getTime()) || testDate.getDate() != d) {
-        dateErrorMsg = "Invalid date";
-        isValid = false;
-      }
-    }
-
-    if (dateErrorMsg) document.querySelector('.date-error').textContent = dateErrorMsg;
-
-    // If either validation failed, stop here
-    if (!isValid) return;
-
-    // --- CREATE THE EMPLOYEE OBJECT ---
-    let employee = new EmployeePayroll();
-
-    employee.name = nameInput;
-
-    // Profile
-    document.querySelectorAll('input[name="profile"]').forEach(radio => {
-      if (radio.checked) employee.profilePic = radio.nextElementSibling.src;
-    });
-
-    // Gender
-    document.querySelectorAll('input[name="gender"]').forEach(radio => {
-      if (radio.checked) employee.gender = radio.nextSibling.textContent.trim();
-    });
-
-    // Department
-    employee.department = [];
-    document.querySelectorAll('input[type="checkbox"]').forEach(box => {
-      if (box.checked) employee.department.push(box.nextSibling.textContent.trim());
-    });
-
-    // Salary
-    employee.salary = salaryOutput.textContent;
-
-    // Start Date
-    employee.startDate = `${day}-${month}-${year}`;
-
-    // Notes
-    employee.notes = document.querySelector('textarea').value;
-
-    console.log(employee.toString());
-    const employeeJson = JSON.stringify(employee);
-
-  // Save in localStorage under a key, e.g. "EmployeePayrollData"
-  localStorage.setItem("EmployeePayrollData", employeeJson);
-
-  alert("Employee Payroll saved to Local Storage!");
-
-    // Optional: store to localStorage
-    // localStorage.setItem('employeePayroll', JSON.stringify(employee));
-
-    alert("Employee saved successfully!");
-  });
-});
-const empListEl = document.getElementById("empList");
-
-let employees = [];
-
-// Load from localStorage (if exists)
-document.addEventListener("DOMContentLoaded", () => {
-  const stored = localStorage.getItem("employees");
-  if (stored) employees = JSON.parse(stored);
-  renderEmployees();
-});
-
-// Save to localStorage
-function saveToStorage() {
-  localStorage.setItem("employees", JSON.stringify(employees));
-}
-
-// Render employee rows
-function renderEmployees() {
-  empListEl.innerHTML = "";
-
-  employees.forEach((emp, index) => {
-    const row = document.createElement("div");
-    row.className = "employee-row";
-
-    row.innerHTML = `
-      <span class="col name">${emp.name}</span>
-      <span class="col gender">${emp.gender}</span>
-      <span class="col dept">${emp.department.map(d => `<span class="dept-badge">${d}</span>`).join('')}</span>
-      <span class="col date">${emp.startDate}</span>
-      <span class="col salary">${emp.salary}</span>
-      <span class="col actions">
-        <button class="edit-btn" onclick="editEmployee(${index})">Edit</button>
-        <button class="delete-btn" onclick="deleteEmployee(${index})">Delete</button>
-      </span>
-    `;
-
-    empListEl.appendChild(row);
-  });
-}
-
-// Delete employee
-function deleteEmployee(idx) {
-  if (confirm("Remove this employee?")) {
-    employees.splice(idx, 1);
-    saveToStorage();
-    renderEmployees();
+  if (nameInput.length < 3) {
+    document.querySelector('.text-error').textContent = "Name must be at least 3 characters";
+    return;
   }
-}
 
-// Edit employee
-function editEmployee(idx) {
-  const emp = employees[idx];
-  const newName = prompt("Name:", emp.name);
-  const newSalary = prompt("Salary:", emp.salary);
-  if (newName && newSalary) {
-    emp.name = newName;
-    emp.salary = newSalary;
-    saveToStorage();
-    renderEmployees();
+  const day = document.querySelector('#day').value;
+  const month = document.querySelector('#month').value;
+  const year = document.querySelector('#year').value;
+  if (!day || !month || !year) {
+    document.querySelector('.date-error').textContent = "Date must be fully selected";
+    return;
   }
-}
+  const testDate = new Date(`${month} ${day}, ${year}`);
+  if (isNaN(testDate.getTime())) {
+    document.querySelector('.date-error').textContent = "Invalid date";
+    return;
+  }
 
-// For testing — Add demo entry
-document.getElementById("addBtn").addEventListener("click", () => {
-  const name = prompt("Name:");
-  const gender = prompt("Gender (Male/Female):");
-  const dept = prompt("Department (comma separated):").split(",");
-  const date = prompt("Start Date (1 Nov 2020):");
-  const salary = prompt("Salary:");
+  // CREATE OBJECT
+  let employee = new EmployeePayroll();
+  employee.name = nameInput;
 
-  employees.push({ name, gender, department: dept, startDate: date, salary });
-  saveToStorage();
-  renderEmployees();
+  // PROFILE
+  document.querySelectorAll('input[name="profile"]').forEach(radio => {
+    if (radio.checked) employee.profilePic = radio.nextElementSibling.src;
+  });
+
+  // GENDER
+  document.querySelectorAll('input[name="gender"]').forEach(radio => {
+    if (radio.checked) employee.gender = radio.value;
+  });
+
+  // DEPARTMENT
+  employee.department = [];
+  document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+    if (box.checked) employee.department.push(box.value);
+  });
+
+  employee.salary = document.querySelector('#salary').value;
+  employee.startDate = `${day}-${month}-${year}`;
+  employee.notes = document.querySelector('textarea').value;
+
+  // SAVE TO localStorage
+  const stored = localStorage.getItem("EmployeePayrollList");
+  let list = stored ? JSON.parse(stored) : [];
+
+  const editIndex = localStorage.getItem("editIndex");
+  if (editIndex !== null) {
+    list[editIndex] = {
+      name: employee.name,
+      profilePic: employee.profilePic,
+      gender: employee.gender,
+      department: employee.department,
+      salary: employee.salary,
+      startDate: employee.startDate,
+      notes: employee.notes
+    };
+    localStorage.removeItem("editIndex");
+  } else {
+    list.push({
+      name: employee.name,
+      profilePic: employee.profilePic,
+      gender: employee.gender,
+      department: employee.department,
+      salary: employee.salary,
+      startDate: employee.startDate,
+      notes: employee.notes
+    });
+  }
+
+  localStorage.setItem("EmployeePayrollList", JSON.stringify(list));
+
+  alert("Employee saved successfully!");
+  window.location.href = "index.html";
 });
 
+
+});

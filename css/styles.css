@@ -75,3 +75,34 @@ button.delete-btn {
 button.delete-btn {
   background: #f44336;
 }
+.table-header,
+.employee-row {
+  display: flex;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 8px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.table-header {
+  background: #ddd;
+  font-weight: bold;
+}
+
+.col {
+  flex: 1;            /* All columns get equal width */
+  text-align: center;
+}
+
+.col.actions {
+  flex: 0.8;          /* Slightly smaller for actions */
+}
+
+.delete-btn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}

@@ -14,7 +14,7 @@
 
   <!-- Center Container -->
   <div class="container">
-    <form class="payroll-form">
+    <form class="payroll-form" id="payrollForm" >
 
       <h2>Employee Payroll Form</h2>
 
@@ -48,8 +48,8 @@
       <div class="form-row">
         <label>Gender</label>
         <div class="inline">
-          <input type="radio" name="gender"> Male
-          <input type="radio" name="gender"> Female
+          <input type="radio" name="gender" value="Male"> Male
+          <input type="radio" name="gender" value="Female"> Female
         </div>
       </div>
 
@@ -57,11 +57,11 @@
       <div class="form-row">
         <label>Department</label>
         <div class="inline">
-          <input type="checkbox"> HR
-          <input type="checkbox"> Sales
-          <input type="checkbox"> Finance
-          <input type="checkbox"> Engineer
-          <input type="checkbox"> Others
+          <input type="checkbox" value="HR"> HR
+          <input type="checkbox" value="Sales"> Sales
+          <input type="checkbox" value="Finance"> Finance
+          <input type="checkbox" value="Engineer"> Engineer
+          <input type="checkbox" value="Others"> Others
         </div>
       </div>
 
@@ -103,7 +103,7 @@
       <!-- Buttons -->
       <div class="buttons">
         <button type="button">Cancel</button>
-        <button type="submit">Submit</button>
+        <button type="submit" id="submitBtn">Submit</button>
         <button type="reset">Reset</button>
       </div>
 
