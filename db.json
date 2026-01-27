@@ -1,0 +1,16 @@
+{
+  "employees": [
+    {
+      "id": "b35b",
+      "name": null,
+      "salary": 0
+    },
+    {
+      "id": "3259",
+      "name": "maam",
+      "gender": "Female",
+      "department": "HR",
+      "salary": 23400
+    }
+  ]
+}

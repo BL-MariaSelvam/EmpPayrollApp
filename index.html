@@ -4,27 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Employee Payroll</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <header class="header">
+  <header class="main-header">
     <h1>Employee Payroll</h1>
-    <button id="addBtn">+ Add User</button>
+    <button id="addBtn">+ Add Employee</button>
   </header>
 
-  <div class="table-header">
-    <span class="col name">Name</span>
-    <span class="col gender">Gender</span>
-    <span class="col dept">Department</span>
-    <span class="col date">Start Date</span>
-    <span class="col salary">Salary</span>
-    <span class="col actions">Actions</span>
+  <div class="container">
+    <div class="table-header">
+      <span class="col name">Name</span>
+      <span class="col gender">Gender</span>
+      <span class="col dept">Department</span>
+      <span class="col salary">Salary</span>
+      <span class="col actions">Actions</span>
+    </div>
+
+    <div id="empList" class="employee-list"></div>
   </div>
 
-  <div id="empList"></div>
-</div>
-<script src="js/index.js"></script>
+  <script src="http_services.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>
